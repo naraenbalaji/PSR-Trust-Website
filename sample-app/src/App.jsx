@@ -72,7 +72,7 @@ const CAUSES = [
     { icon: "🍱", title: "Mid-Day Meal Support", desc: "All three rural schools participate in the Government noon-meal scheme. We maintain and upgrade cooking facilities to ensure every child receives a nutritious meal daily.", link: "#schools", linkLabel: "Our Schools" },
     { icon: "📖", title: "Educational Equity", desc: "We believe no citizen should be deprived of education due to financial reasons. Scholarship eligibility is open to any grade — school or college — wherever merit and need align.", link: "#faq", linkLabel: "Eligibility FAQ" },
 ];
-
+ 
 const SCHOOLS = [
     {
         number: "01", color: "#C9993A",
