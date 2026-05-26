@@ -5,6 +5,16 @@ import sumithra from "./assets/sumithra.jpeg"
 import chakrapani from "./assets/chakrapani.jpeg"
 import jayam from "./assets/jayam.jpeg"
 
+import Keezhachalai_Rep from "./assets/Keezhachalai_Rep.jpg"
+import NewBuilding from "./assets/NewBuilding.jpg"
+import YogaSession from "./assets/YogaSession.jpeg"
+import Deepavali from "./assets/Deepavali.jpeg"
+import Puduthurai_Rep from "./assets/Puduthurai_Rep.jpg"
+import CSK_School from "./assets/CSK School.jpeg"
+
+import headerLogo from "./assets/header-logo-try-2.png"
+import footerLogo from "./assets/footer-logo-try-1.png"
+
 // ─── THEME ───────────────────────────────────────────────────
 const T = {
     gold: "#C9993A",
@@ -20,7 +30,7 @@ const T = {
 
 // ─── CENTRAL DATA ─────────────────────────────────────────────
 const SITE = {
-    name: "PS Ramachandran Educational & Charitable Trust",
+    name: "P S Ramachandran Educational & Charitable Trust",
     shortName: "PSR Trust",
     tagline: "Supporting Education to Everyone",
     founded: "2007",
@@ -213,10 +223,11 @@ function Navbar({ active }) {
     return (
         <nav style={base}>
             {/* Logo */}
-            <a href="#home" style={{ textDecoration: "none", display: "flex", alignItems: "center", gap: 12 }} onClick={() => setMenuOpen(false)}>
-                <div style={{ width: 38, height: 38, borderRadius: "50%", background: T.gold, display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", fontFamily: "'Cormorant Garamond',serif", fontSize: 13, fontWeight: 600, flexShrink: 0 }}>PSR</div>
+            <a href="#home" style={{ textDecoration: "none", display: "flex", alignItems: "center", gap:0, flexDirection:'column' }} onClick={() => setMenuOpen(false)}>
+                {/* <div style={{ width: 38, height: 38, borderRadius: "50%", background: T.gold, display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", fontFamily: "'Cormorant Garamond',serif", fontSize: 13, fontWeight: 600, flexShrink: 0 }}>PSR</div> */}
+                <img src={headerLogo}/>
                 <div style={{ lineHeight: 1.25 }}>
-                    <div style={{ fontSize: 14, fontWeight: 500, color: T.ink }}>PSR Trust</div>
+                    {/* <div style={{ fontSize: 14, fontWeight: 500, color: T.ink }}>PSR Trust</div> */}
                     <div style={{ fontSize: 10, color: T.inkSoft, letterSpacing: "0.08em", textTransform: "uppercase" }}>Est. 2007 · 80G Registered</div>
                 </div>
             </a>
@@ -573,10 +584,10 @@ function Trustees() {
                 </div>
                 <div style={{ display: "grid", gridTemplateColumns: "repeat(4,1fr)", gap: "1.5rem" }}>
                     {TRUSTEES.map((tr, i) => (
-                        <div key={i} style={{ border: "1px solid rgba(201,153,58,0.2)", borderRadius: 4, overflow: "hidden", transition: "border-color 0.3s, transform 0.3s" }}
+                        <div key={i} style={{ border: "1px solid rgba(201,153,58,0.2)", borderRadius: "28px",padding:'4px', overflow: "hidden", transition: "border-color 0.3s, transform 0.3s" }}
                             onMouseEnter={e => { e.currentTarget.style.borderColor = T.gold; e.currentTarget.style.transform = "translateY(-4px)"; }}
                             onMouseLeave={e => { e.currentTarget.style.borderColor = "rgba(201,153,58,0.2)"; e.currentTarget.style.transform = "translateY(0)"; }}>
-                            <div style={{ height: 300, background: T.goldPale, display: "flex", alignItems: "center", justifyContent: "center" }}>
+                            <div style={{ height: 300, display: "flex", alignItems: "center", justifyContent: "center" }}>
                                 {/* <div style={{ width: 68, height: 68, borderRadius: "50%", background: T.gold, color: "#fff", fontFamily: "'Cormorant Garamond',serif", fontSize: "1.5rem", display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 500 }}>{tr.initials}</div> */}
                                 <img src={tr.img} height={300} style={{borderRadius:'28px', objectFit:"cover", width:"100%"}}/>
                             </div>
@@ -601,9 +612,17 @@ function Gallery() {
         "New School Building — Valeo & Anand Group Funded",
         "Yoga & PE Sessions — Keezhachalai Primary School",
         "Deepavali Dress Distribution for All Students",
-        "Sri Lakshmi Hayagreevar Prathishtai — June 2022",
-        "CSK School, Thirunangur — Phase I Construction",
+        "Republic Day Celebration - Puduthurai Govt Aided School, Jan 2021",
+        "CSK School, Thirunangur — Nursery and Primary School",
     ];
+    const images = [
+        Keezhachalai_Rep,
+        NewBuilding,
+        YogaSession,
+        Deepavali,
+        Puduthurai_Rep,
+        CSK_School
+    ]
 
     return (
         <section id="gallery" style={{ background: T.cream, padding: "5rem clamp(1.5rem,5vw,3rem)", fontFamily: "'Jost',sans-serif" }}>
@@ -619,7 +638,7 @@ function Gallery() {
                             onMouseEnter={e => { e.currentTarget.children[0].style.transform = "scale(1.05)"; }}
                             onMouseLeave={e => { e.currentTarget.children[0].style.transform = "scale(1)"; }}>
                             <div style={{ width: "100%", height: "100%", background: `linear-gradient(135deg,${colors[i]}33,${colors[i]}88)`, display: "flex", alignItems: "center", justifyContent: "center", transition: "transform 0.4s ease", fontSize: 40 }}>
-                                {["🏫", "🏗️", "🧘", "🎁", "🪔", "🏗️"][i]}
+                                <img src={images[i]} style={{objectFit:'cover', width:'100%', height:'100%'}}/>
                             </div>
                             <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, background: "linear-gradient(transparent,rgba(26,22,18,0.85))", padding: "2rem 1rem 1rem", color: "#fff", fontSize: 12, lineHeight: 1.4 }}>{caption}</div>
                         </div>
@@ -774,8 +793,9 @@ function Footer() {
                     {/* Brand */}
                     <div>
                         <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: "1rem" }}>
-                            <div style={{ width: 38, height: 38, borderRadius: "50%", background: T.gold, display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", fontFamily: "'Cormorant Garamond',serif", fontSize: 13, fontWeight: 600 }}>PSR</div>
-                            <div style={{ fontFamily: "'Cormorant Garamond',serif", fontSize: "1.1rem", color: "#fff" }}>PS Ramachandran Trust</div>
+                            {/* <div style={{ width: 38, height: 38, borderRadius: "50%", background: T.gold, display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", fontFamily: "'Cormorant Garamond',serif", fontSize: 13, fontWeight: 600 }}>PSR</div> */}
+                            {/* <div style={{ fontFamily: "'Cormorant Garamond',serif", fontSize: "1.1rem", color: "#fff" }}>PS Ramachandran Trust</div> */}
+                            <img src={footerLogo} width={300}/>
                         </div>
                         <p style={{ fontSize: 13, color: "rgba(255,255,255,0.45)", lineHeight: 1.75 }}>Operating since 2007 with the primary aim of providing education to the needy. Registered under The Income Tax Act 1961. 80G exemption applicable.</p>
                         <div style={{ marginTop: "1.5rem", display: "flex", flexDirection: "column", gap: 6 }}>
@@ -800,7 +820,7 @@ function Footer() {
                     ))}
                 </div>
                 <div style={{ borderTop: "1px solid rgba(255,255,255,0.06)", paddingTop: "1.5rem", display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "1rem" }}>
-                    <span style={{ fontSize: 12, color: "rgba(255,255,255,0.3)" }}>© 2024 PS Ramachandran Educational & Charitable Trust. All rights reserved.</span>
+                    <span style={{ fontSize: 12, color: "rgba(255,255,255,0.3)" }}>© 2024 P S Ramachandran Educational & Charitable Trust. All rights reserved.</span>
                     <a href={SITE.donateUrl} target="_blank" rel="noopener noreferrer" style={{ fontSize: 12, color: T.gold, textDecoration: "none" }}>Donate Now →</a>
                 </div>
             </div>
