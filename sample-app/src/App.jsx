@@ -82,7 +82,7 @@ const CAUSES = [
     { icon: "🍱", title: "Mid-Day Meal Support", desc: "All three rural schools participate in the Government noon-meal scheme. We maintain and upgrade cooking facilities to ensure every child receives a nutritious meal daily.", link: "#schools", linkLabel: "Our Schools" },
     { icon: "📖", title: "Educational Equity", desc: "We believe no citizen should be deprived of education due to financial reasons. Scholarship eligibility is open to any grade — school or college — wherever merit and need align.", link: "#faq", linkLabel: "Eligibility FAQ" },
 ];
- 
+
 const SCHOOLS = [
     {
         number: "01", color: "#C9993A",
@@ -197,6 +197,22 @@ function Navbar({ active }) {
     const scrolled = useScrolled();
     const [menuOpen, setMenuOpen] = useState(false);
 
+    // Smooth scroll handler
+    const handleNavClick = (e, href) => {
+        if (href.startsWith("#")) {
+            e.preventDefault();
+            setMenuOpen(false);
+            const target = document.querySelector(href);
+            if (target) {
+                target.scrollIntoView({ behavior: "smooth", block: "start" });
+                // Offset for fixed navbar height
+                const navH = 68;
+                const y = target.getBoundingClientRect().top + window.scrollY - navH;
+                window.scrollTo({ top: y, behavior: "smooth" });
+            }
+        }
+    };
+
     const navLinks = [
         { label: "About", href: "#about" },
         { label: "Causes", href: "#causes" },
@@ -210,10 +226,13 @@ function Navbar({ active }) {
 
     const base = {
         position: "fixed", top: 0, left: 0, right: 0, zIndex: 1000,
-        background: scrolled ? "rgba(250,247,242,0.97)" : "rgba(250,247,242,0.85)",
+        // Always opaque — no more merging with background
+        background: scrolled ? "rgba(250,247,242,0.98)" : "#FAF7F2",
         backdropFilter: "blur(14px)",
-        borderBottom: scrolled ? `1px solid rgba(201,153,58,0.2)` : "1px solid transparent",
-        transition: "all 0.3s",
+        // Always visible border
+        borderBottom: `1px solid ${scrolled ? "rgba(201,153,58,0.35)" : "rgba(201,153,58,0.25)"}`,
+        boxShadow: scrolled ? "0 2px 20px rgba(26,22,18,0.08)" : "0 1px 8px rgba(26,22,18,0.05)",
+        transition: "box-shadow 0.3s, border-color 0.3s",
         padding: "0 clamp(1rem,3vw,2.5rem)",
         display: "flex", alignItems: "center", justifyContent: "space-between",
         height: 68,
@@ -223,20 +242,26 @@ function Navbar({ active }) {
     return (
         <nav style={base}>
             {/* Logo */}
-            <a href="#home" style={{ textDecoration: "none", display: "flex", alignItems: "center", gap:0, flexDirection:'column' }} onClick={() => setMenuOpen(false)}>
-                {/* <div style={{ width: 38, height: 38, borderRadius: "50%", background: T.gold, display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", fontFamily: "'Cormorant Garamond',serif", fontSize: 13, fontWeight: 600, flexShrink: 0 }}>PSR</div> */}
-                <img src={headerLogo}/>
+            <a href="#home" style={{ textDecoration: "none", display: "flex", alignItems: "center", gap: 0, flexDirection: "column" }}
+                onClick={e => handleNavClick(e, "#home")}>
+                <img src={headerLogo} />
                 <div style={{ lineHeight: 1.25 }}>
-                    {/* <div style={{ fontSize: 14, fontWeight: 500, color: T.ink }}>PSR Trust</div> */}
                     <div style={{ fontSize: 10, color: T.inkSoft, letterSpacing: "0.08em", textTransform: "uppercase" }}>Est. 2007 · 80G Registered</div>
                 </div>
             </a>
 
             {/* Desktop links */}
-            <ul style={{ display: "flex", gap: "clamp(1rem,2vw,1.8rem)", listStyle: "none", margin: 0, padding: 0, "@media(maxWidth:900px)": { display: "none" } }} className="nav-desktop">
+            <ul style={{ display: "flex", gap: "clamp(1rem,2vw,1.8rem)", listStyle: "none", margin: 0, padding: 0 }} className="nav-desktop">
                 {navLinks.map(l => (
                     <li key={l.label}>
-                        <a href={l.href} style={{ fontSize: 12, color: T.inkMid, textDecoration: "none", letterSpacing: "0.06em", textTransform: "uppercase", fontWeight: 400, transition: "color 0.2s" }}
+                        <a href={l.href}
+                            onClick={e => handleNavClick(e, l.href)}
+                            style={{
+                                fontSize: 12, color: T.inkMid, textDecoration: "none",
+                                letterSpacing: "0.06em", textTransform: "uppercase",
+                                fontWeight: 500, transition: "color 0.2s",
+                                // slightly bolder weight so links read clearly
+                            }}
                             onMouseEnter={e => e.target.style.color = T.gold}
                             onMouseLeave={e => e.target.style.color = T.inkMid}>
                             {l.label}
@@ -253,18 +278,29 @@ function Navbar({ active }) {
                     onMouseLeave={e => e.target.style.background = T.gold}>
                     Donate Now
                 </a>
-                <button onClick={() => setMenuOpen(o => !o)} style={{ background: "none", border: "none", cursor: "pointer", padding: 4, display: "none" }} className="burger" aria-label="Menu">
-                    <div style={{ width: 22, height: 2, background: T.ink, marginBottom: 5, transition: "all 0.2s", transform: menuOpen ? "rotate(45deg) translate(5px,5px)" : "none" }} />
-                    <div style={{ width: 22, height: 2, background: T.ink, marginBottom: 5, opacity: menuOpen ? 0 : 1 }} />
-                    <div style={{ width: 22, height: 2, background: T.ink, transition: "all 0.2s", transform: menuOpen ? "rotate(-45deg) translate(5px,-5px)" : "none" }} />
+                <button onClick={() => setMenuOpen(o => !o)}
+                    style={{ background: "none", border: "none", cursor: "pointer", padding: 4, display: "none" }}
+                    className="burger" aria-label="Menu">
+                    <div style={{ width: 22, height: 2, background: T.ink, marginBottom: 5, transition: "all 0.25s", transform: menuOpen ? "rotate(45deg) translate(5px,5px)" : "none" }} />
+                    <div style={{ width: 22, height: 2, background: T.ink, marginBottom: 5, opacity: menuOpen ? 0 : 1, transition: "opacity 0.2s" }} />
+                    <div style={{ width: 22, height: 2, background: T.ink, transition: "all 0.25s", transform: menuOpen ? "rotate(-45deg) translate(5px,-5px)" : "none" }} />
                 </button>
             </div>
 
             {/* Mobile menu */}
             {menuOpen && (
-                <div style={{ position: "fixed", top: 68, left: 0, right: 0, background: T.cream, borderBottom: `1px solid rgba(201,153,58,0.2)`, padding: "1rem 1.5rem", display: "flex", flexDirection: "column", gap: 0 }}>
+                <div style={{
+                    position: "fixed", top: 68, left: 0, right: 0,
+                    background: "#FAF7F2",
+                    borderBottom: `1px solid rgba(201,153,58,0.25)`,
+                    boxShadow: "0 8px 24px rgba(26,22,18,0.08)",
+                    padding: "1rem 1.5rem",
+                    display: "flex", flexDirection: "column", gap: 0,
+                    animation: "slideDown 0.22s ease-out",
+                }}>
                     {navLinks.map(l => (
-                        <a key={l.label} href={l.href} onClick={() => setMenuOpen(false)}
+                        <a key={l.label} href={l.href}
+                            onClick={e => handleNavClick(e, l.href)}
                             style={{ padding: "0.75rem 0", borderBottom: `1px solid rgba(201,153,58,0.1)`, fontSize: 14, color: T.inkMid, textDecoration: "none", letterSpacing: "0.06em" }}>
                             {l.label}
                         </a>
@@ -273,8 +309,12 @@ function Navbar({ active }) {
             )}
 
             <style>{`
-        @media(max-width:860px){ .nav-desktop{display:none!important} .burger{display:flex!important;flex-direction:column} }
-      `}</style>
+                @media(max-width:860px){ .nav-desktop{display:none!important} .burger{display:flex!important;flex-direction:column} }
+                @keyframes slideDown {
+                    from { opacity: 0; transform: translateY(-10px); }
+                    to   { opacity: 1; transform: translateY(0); }
+                }
+            `}</style>
         </nav>
     );
 }
@@ -584,12 +624,12 @@ function Trustees() {
                 </div>
                 <div style={{ display: "grid", gridTemplateColumns: "repeat(4,1fr)", gap: "1.5rem" }}>
                     {TRUSTEES.map((tr, i) => (
-                        <div key={i} style={{ border: "1px solid rgba(201,153,58,0.2)", borderRadius: "28px",padding:'4px', overflow: "hidden", transition: "border-color 0.3s, transform 0.3s" }}
+                        <div key={i} style={{ border: "1px solid rgba(201,153,58,0.2)", borderRadius: "28px", padding: '4px', overflow: "hidden", transition: "border-color 0.3s, transform 0.3s" }}
                             onMouseEnter={e => { e.currentTarget.style.borderColor = T.gold; e.currentTarget.style.transform = "translateY(-4px)"; }}
                             onMouseLeave={e => { e.currentTarget.style.borderColor = "rgba(201,153,58,0.2)"; e.currentTarget.style.transform = "translateY(0)"; }}>
                             <div style={{ height: 300, display: "flex", alignItems: "center", justifyContent: "center" }}>
                                 {/* <div style={{ width: 68, height: 68, borderRadius: "50%", background: T.gold, color: "#fff", fontFamily: "'Cormorant Garamond',serif", fontSize: "1.5rem", display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 500 }}>{tr.initials}</div> */}
-                                <img src={tr.img} height={300} style={{borderRadius:'28px', objectFit:"cover", width:"100%"}}/>
+                                <img src={tr.img} height={300} style={{ borderRadius: '28px', objectFit: "cover", width: "100%" }} />
                             </div>
                             <div style={{ padding: "1.25rem" }}>
                                 <div style={{ fontFamily: "'Cormorant Garamond',serif", fontSize: "1.1rem", color: T.ink, fontWeight: 500 }}>{tr.name}</div>
@@ -638,15 +678,15 @@ function Gallery() {
                             onMouseEnter={e => { e.currentTarget.children[0].style.transform = "scale(1.05)"; }}
                             onMouseLeave={e => { e.currentTarget.children[0].style.transform = "scale(1)"; }}>
                             <div style={{ width: "100%", height: "100%", background: `linear-gradient(135deg,${colors[i]}33,${colors[i]}88)`, display: "flex", alignItems: "center", justifyContent: "center", transition: "transform 0.4s ease", fontSize: 40 }}>
-                                <img src={images[i]} style={{objectFit:'cover', width:'100%', height:'100%'}}/>
+                                <img src={images[i]} style={{ objectFit: 'cover', width: '100%', height: '100%' }} />
                             </div>
                             <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, background: "linear-gradient(transparent,rgba(26,22,18,0.85))", padding: "2rem 1rem 1rem", color: "#fff", fontSize: 12, lineHeight: 1.4 }}>{caption}</div>
                         </div>
                     ))}
                 </div>
-                <p style={{ marginTop: "1.5rem", fontSize: 13, color: T.inkSoft, textAlign: "center" }}>
+                {/* <p style={{ marginTop: "1.5rem", fontSize: 13, color: T.inkSoft, textAlign: "center" }}>
                     Gallery images will be replaced with actual photos when integrated with the website CMS.
-                </p>
+                </p> */}
             </div>
             <style>{`@media(max-width:700px){#gallery>div>div:last-child{grid-template-columns:1fr 1fr!important}}`}</style>
         </section>
@@ -701,39 +741,209 @@ function FAQ() {
         </section>
     );
 }
-
 function Contact() {
-    const [form, setForm] = useState({ name: "", email: "", message: "" });
-    const [sent, setSent] = useState(false);
+    const [form, setForm] = useState({
+        name: "",
+        email: "",
+        message: ""
+    });
 
-    const handleSubmit = (e) => {
+    const [sent, setSent] = useState(false);
+    const [loading, setLoading] = useState(false);
+
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        setSent(true);
+
+        setLoading(true);
+
+        try {
+            const response = await fetch("https://api.web3forms.com/submit", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    Accept: "application/json",
+                },
+                body: JSON.stringify({
+                    // Replace with your actual access key
+                    access_key: "6344c88c-c8f1-4dfa-8838-f78296f508bf",
+
+                    name: form.name,
+                    email: form.email,
+                    message: form.message,
+
+                    subject: `New Contact Form Submission from ${form.name}`,
+
+                    from_name: "PSR Trust Website",
+
+                    replyto: form.email,
+
+                    botcheck: false,
+
+                    // Auto-reply to user
+                    autoresponse: `Dear ${form.name},
+
+Thank you for contacting PSR Trust.
+
+We have received your message successfully. Our team will review your query and get back to you within 2–3 business days.
+
+Warm regards,
+PSR Trust
+https://psrtrust.org`,
+                }),
+            });
+
+            const result = await response.json();
+
+            if (result.success) {
+                setSent(true);
+
+                setForm({
+                    name: "",
+                    email: "",
+                    message: "",
+                });
+            } else {
+                console.log(result);
+                alert("Something went wrong. Please try again.");
+            }
+        } catch (error) {
+            console.log(error);
+            alert("Failed to send message.");
+        }
+
+        setLoading(false);
     };
 
     return (
-        <section id="contact" style={{ background: "#fff", padding: "5rem clamp(1.5rem,5vw,3rem)", fontFamily: "'Jost',sans-serif" }}>
-            <div style={{ maxWidth: 1200, margin: "0 auto", display: "grid", gridTemplateColumns: "1fr 1fr", gap: "4rem", alignItems: "start" }}>
+        <section
+            id="contact"
+            style={{
+                background: "#fff",
+                padding: "5rem clamp(1.5rem,5vw,3rem)",
+                fontFamily: "'Jost',sans-serif"
+            }}
+        >
+            <div
+                style={{
+                    maxWidth: 1200,
+                    margin: "0 auto",
+                    display: "grid",
+                    gridTemplateColumns: "1fr 1fr",
+                    gap: "4rem",
+                    alignItems: "start"
+                }}
+            >
                 {/* Info */}
                 <div>
-                    <div style={gs.sectionTag}><span style={gs.goldLine} />Get in Touch</div>
-                    <h2 style={gs.h2}>Contact <em style={{ fontStyle: "italic", color: T.gold }}>us</em></h2>
-                    <p style={gs.lead}>Have questions about scholarships, school partnerships, or donations? We'd love to hear from you.</p>
-                    <div style={{ marginTop: "2.5rem", display: "flex", flexDirection: "column", gap: "1.25rem" }}>
+                    <div style={gs.sectionTag}>
+                        <span style={gs.goldLine} />
+                        Get in Touch
+                    </div>
+
+                    <h2 style={gs.h2}>
+                        Contact{" "}
+                        <em style={{ fontStyle: "italic", color: T.gold }}>
+                            us
+                        </em>
+                    </h2>
+
+                    <p style={gs.lead}>
+                        Have questions about scholarships, school partnerships,
+                        or donations? We'd love to hear from you.
+                    </p>
+
+                    <div
+                        style={{
+                            marginTop: "2.5rem",
+                            display: "flex",
+                            flexDirection: "column",
+                            gap: "1.25rem"
+                        }}
+                    >
                         {[
-                            { icon: "📞", label: "Phone", val: SITE.phone, href: `tel:${SITE.phone}` },
-                            { icon: "✉️", label: "Email", val: SITE.email, href: `mailto:${SITE.email}` },
-                            { icon: "🌐", label: "Website", val: "psrtrust.org", href: SITE.website },
-                            { icon: "📍", label: "Location", val: SITE.address, href: null },
-                        ].map(c => (
-                            <div key={c.label} style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
-                                <div style={{ width: 40, height: 40, background: T.goldPale, borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 18, flexShrink: 0 }}>{c.icon}</div>
+                            {
+                                icon: "📞",
+                                label: "Phone",
+                                val: SITE.phone,
+                                href: `tel:${SITE.phone}`
+                            },
+                            {
+                                icon: "✉️",
+                                label: "Email",
+                                val: SITE.email,
+                                href: `mailto:${SITE.email}`
+                            },
+                            {
+                                icon: "🌐",
+                                label: "Website",
+                                val: "psrtrust.org",
+                                href: SITE.website
+                            },
+                            {
+                                icon: "📍",
+                                label: "Location",
+                                val: SITE.address,
+                                href: null
+                            },
+                        ].map((c) => (
+                            <div
+                                key={c.label}
+                                style={{
+                                    display: "flex",
+                                    alignItems: "center",
+                                    gap: "1rem"
+                                }}
+                            >
+                                <div
+                                    style={{
+                                        width: 40,
+                                        height: 40,
+                                        background: T.goldPale,
+                                        borderRadius: "50%",
+                                        display: "flex",
+                                        alignItems: "center",
+                                        justifyContent: "center",
+                                        fontSize: 18,
+                                        flexShrink: 0
+                                    }}
+                                >
+                                    {c.icon}
+                                </div>
+
                                 <div>
-                                    <div style={{ fontSize: 11, color: T.inkSoft, letterSpacing: "0.08em", textTransform: "uppercase" }}>{c.label}</div>
-                                    {c.href
-                                        ? <a href={c.href} style={{ fontSize: 14, color: T.gold, textDecoration: "none", fontWeight: 500 }}>{c.val}</a>
-                                        : <div style={{ fontSize: 14, color: T.inkMid }}>{c.val}</div>
-                                    }
+                                    <div
+                                        style={{
+                                            fontSize: 11,
+                                            color: T.inkSoft,
+                                            letterSpacing: "0.08em",
+                                            textTransform: "uppercase"
+                                        }}
+                                    >
+                                        {c.label}
+                                    </div>
+
+                                    {c.href ? (
+                                        <a
+                                            href={c.href}
+                                            style={{
+                                                fontSize: 14,
+                                                color: T.gold,
+                                                textDecoration: "none",
+                                                fontWeight: 500
+                                            }}
+                                        >
+                                            {c.val}
+                                        </a>
+                                    ) : (
+                                        <div
+                                            style={{
+                                                fontSize: 14,
+                                                color: T.inkMid
+                                            }}
+                                        >
+                                            {c.val}
+                                        </div>
+                                    )}
                                 </div>
                             </div>
                         ))}
@@ -741,40 +951,192 @@ function Contact() {
                 </div>
 
                 {/* Form */}
-                <div style={{ background: T.goldPale, border: "1px solid rgba(201,153,58,0.2)", borderRadius: 4, padding: "2.5rem" }}>
+                <div
+                    style={{
+                        background: T.goldPale,
+                        border: "1px solid rgba(201,153,58,0.2)",
+                        borderRadius: 4,
+                        padding: "2.5rem"
+                    }}
+                >
                     {sent ? (
-                        <div style={{ textAlign: "center", padding: "2rem 0" }}>
-                            <div style={{ fontSize: 48, marginBottom: "1rem" }}>✅</div>
-                            <h3 style={{ fontFamily: "'Cormorant Garamond',serif", fontSize: "1.5rem", color: T.ink, marginBottom: "0.5rem" }}>Message Received</h3>
-                            <p style={{ fontSize: 14, color: T.inkSoft }}>Thank you for reaching out. We'll get back to you at {form.email} within 2–3 working days.</p>
+                        <div
+                            style={{
+                                textAlign: "center",
+                                padding: "2rem 0"
+                            }}
+                        >
+                            <div
+                                style={{
+                                    fontSize: 48,
+                                    marginBottom: "1rem"
+                                }}
+                            >
+                                ✅
+                            </div>
+
+                            <h3
+                                style={{
+                                    fontFamily: "'Cormorant Garamond',serif",
+                                    fontSize: "1.5rem",
+                                    color: T.ink,
+                                    marginBottom: "0.5rem"
+                                }}
+                            >
+                                Message Received
+                            </h3>
+
+                            <p
+                                style={{
+                                    fontSize: 14,
+                                    color: T.inkSoft
+                                }}
+                            >
+                                Thank you for reaching out. We'll get back to
+                                you at {form.email} within 2–3 working days.
+                            </p>
                         </div>
                     ) : (
-                        <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: "1.25rem" }}>
+                        <form
+                            onSubmit={handleSubmit}
+                            style={{
+                                display: "flex",
+                                flexDirection: "column",
+                                gap: "1.25rem"
+                            }}
+                        >
                             {[
-                                { label: "Your Name", key: "name", type: "text", placeholder: "Full name" },
-                                { label: "Email Address", key: "email", type: "email", placeholder: "your@email.com" },
-                            ].map(f => (
+                                {
+                                    label: "Your Name",
+                                    key: "name",
+                                    type: "text",
+                                    placeholder: "Full name"
+                                },
+                                {
+                                    label: "Email Address",
+                                    key: "email",
+                                    type: "email",
+                                    placeholder: "your@email.com"
+                                },
+                            ].map((f) => (
                                 <div key={f.key}>
-                                    <label style={{ fontSize: 11, letterSpacing: "0.08em", textTransform: "uppercase", color: T.inkSoft, display: "block", marginBottom: 6 }}>{f.label}</label>
-                                    <input type={f.type} placeholder={f.placeholder} required value={form[f.key]}
-                                        onChange={e => setForm(v => ({ ...v, [f.key]: e.target.value }))}
-                                        style={{ width: "100%", background: "#fff", border: "1px solid rgba(201,153,58,0.25)", borderRadius: 2, padding: "10px 14px", fontSize: 14, color: T.ink, fontFamily: "'Jost',sans-serif", outline: "none" }} />
+                                    <label
+                                        style={{
+                                            fontSize: 11,
+                                            letterSpacing: "0.08em",
+                                            textTransform: "uppercase",
+                                            color: T.inkSoft,
+                                            display: "block",
+                                            marginBottom: 6
+                                        }}
+                                    >
+                                        {f.label}
+                                    </label>
+
+                                    <input
+                                        type={f.type}
+                                        placeholder={f.placeholder}
+                                        required
+                                        value={form[f.key]}
+                                        onChange={(e) =>
+                                            setForm((v) => ({
+                                                ...v,
+                                                [f.key]: e.target.value
+                                            }))
+                                        }
+                                        style={{
+                                            width: "100%",
+                                            background: "#fff",
+                                            border:
+                                                "1px solid rgba(201,153,58,0.25)",
+                                            borderRadius: 2,
+                                            padding: "10px 14px",
+                                            fontSize: 14,
+                                            color: T.ink,
+                                            fontFamily: "'Jost',sans-serif",
+                                            outline: "none"
+                                        }}
+                                    />
                                 </div>
                             ))}
+
                             <div>
-                                <label style={{ fontSize: 11, letterSpacing: "0.08em", textTransform: "uppercase", color: T.inkSoft, display: "block", marginBottom: 6 }}>Message</label>
-                                <textarea required rows={5} placeholder="Tell us how we can help you…" value={form.message}
-                                    onChange={e => setForm(v => ({ ...v, message: e.target.value }))}
-                                    style={{ width: "100%", background: "#fff", border: "1px solid rgba(201,153,58,0.25)", borderRadius: 2, padding: "10px 14px", fontSize: 14, color: T.ink, fontFamily: "'Jost',sans-serif", outline: "none", resize: "vertical" }} />
+                                <label
+                                    style={{
+                                        fontSize: 11,
+                                        letterSpacing: "0.08em",
+                                        textTransform: "uppercase",
+                                        color: T.inkSoft,
+                                        display: "block",
+                                        marginBottom: 6
+                                    }}
+                                >
+                                    Message
+                                </label>
+
+                                <textarea
+                                    required
+                                    rows={5}
+                                    placeholder="Tell us how we can help you…"
+                                    value={form.message}
+                                    onChange={(e) =>
+                                        setForm((v) => ({
+                                            ...v,
+                                            message: e.target.value
+                                        }))
+                                    }
+                                    style={{
+                                        width: "100%",
+                                        background: "#fff",
+                                        border:
+                                            "1px solid rgba(201,153,58,0.25)",
+                                        borderRadius: 2,
+                                        padding: "10px 14px",
+                                        fontSize: 14,
+                                        color: T.ink,
+                                        fontFamily: "'Jost',sans-serif",
+                                        outline: "none",
+                                        resize: "vertical"
+                                    }}
+                                />
                             </div>
-                            <button type="submit" style={{ background: T.gold, color: "#fff", border: "none", padding: "13px 32px", borderRadius: 2, fontSize: 12, letterSpacing: "0.1em", textTransform: "uppercase", fontWeight: 600, cursor: "pointer", alignSelf: "flex-start" }}>
-                                Send Message
+
+                            <button
+                                type="submit"
+                                disabled={loading}
+                                style={{
+                                    background: T.gold,
+                                    color: "#fff",
+                                    border: "none",
+                                    padding: "13px 32px",
+                                    borderRadius: 2,
+                                    fontSize: 12,
+                                    letterSpacing: "0.1em",
+                                    textTransform: "uppercase",
+                                    fontWeight: 600,
+                                    cursor: loading
+                                        ? "not-allowed"
+                                        : "pointer",
+                                    opacity: loading ? 0.7 : 1,
+                                    alignSelf: "flex-start"
+                                }}
+                            >
+                                {loading ? "Sending..." : "Send Message"}
                             </button>
                         </form>
                     )}
                 </div>
             </div>
-            <style>{`@media(max-width:820px){#contact>div{grid-template-columns:1fr!important}}`}</style>
+
+            <style>
+                {`
+                    @media(max-width:820px){
+                        #contact>div{
+                            grid-template-columns:1fr!important
+                        }
+                    }
+                `}
+            </style>
         </section>
     );
 }
@@ -795,7 +1157,7 @@ function Footer() {
                         <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: "1rem" }}>
                             {/* <div style={{ width: 38, height: 38, borderRadius: "50%", background: T.gold, display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", fontFamily: "'Cormorant Garamond',serif", fontSize: 13, fontWeight: 600 }}>PSR</div> */}
                             {/* <div style={{ fontFamily: "'Cormorant Garamond',serif", fontSize: "1.1rem", color: "#fff" }}>PS Ramachandran Trust</div> */}
-                            <img src={footerLogo} width={300}/>
+                            <img src={footerLogo} width={300} />
                         </div>
                         <p style={{ fontSize: 13, color: "rgba(255,255,255,0.45)", lineHeight: 1.75 }}>Operating since 2007 with the primary aim of providing education to the needy. Registered under The Income Tax Act 1961. 80G exemption applicable.</p>
                         <div style={{ marginTop: "1.5rem", display: "flex", flexDirection: "column", gap: 6 }}>
@@ -820,7 +1182,7 @@ function Footer() {
                     ))}
                 </div>
                 <div style={{ borderTop: "1px solid rgba(255,255,255,0.06)", paddingTop: "1.5rem", display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "1rem" }}>
-                    <span style={{ fontSize: 12, color: "rgba(255,255,255,0.3)" }}>© 2024 P S Ramachandran Educational & Charitable Trust. All rights reserved.</span>
+                    <span style={{ fontSize: 12, color: "rgba(255,255,255,0.3)" }}>© 2026 P S Ramachandran Educational & Charitable Trust. All rights reserved.</span>
                     <a href={SITE.donateUrl} target="_blank" rel="noopener noreferrer" style={{ fontSize: 12, color: T.gold, textDecoration: "none" }}>Donate Now →</a>
                 </div>
             </div>
